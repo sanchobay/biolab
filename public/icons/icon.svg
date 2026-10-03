@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>BioLab</title>
+  <rect width="512" height="512" rx="112" fill="#FFFFFF"/>
+  <path d="M149 330H363L398 396Q406 412 386 412H126Q106 412 114 396Z" fill="#3CC04A"/>
+  <circle cx="226" cy="372" r="14" fill="#FFFFFF"/>
+  <circle cx="286" cy="352" r="10" fill="#FFFFFF"/>
+  <path d="M212 104V214L112 398Q100 424 130 424H382Q412 424 400 398L300 214V104" fill="none" stroke="#1B6FE0" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M184 96H328" fill="none" stroke="#1B6FE0" stroke-width="28" stroke-linecap="round"/>
+</svg>

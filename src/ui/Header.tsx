@@ -1,6 +1,8 @@
 import { BookOpen, FlaskConical, Info, LayoutGrid, Moon, Sun, type LucideIcon } from 'lucide-react';
 import { LOCALES, LOCALE_META, splitName, useI18n } from '../i18n';
+import { DisplaySettings } from './DisplaySettings';
 import type { Destination, View } from './navigation';
+import { OfflineStatus } from './pwa/OfflineStatus';
 import type { Theme } from './theme';
 
 interface HeaderProps {
@@ -56,6 +58,7 @@ export function Header({ theme, onThemeChange, view, onNavigate }: HeaderProps) 
       </nav>
 
       <div className="header-tools">
+        <OfflineStatus />
         {/* Each language is named in its own script and marked with its own lang (PRD-0003 §9). */}
         <div role="group" aria-label={h.languageGroup} className="segmented language-switch">
           {LOCALES.map((option) => (
@@ -83,6 +86,7 @@ export function Header({ theme, onThemeChange, view, onNavigate }: HeaderProps) 
             </button>
           ))}
         </div>
+        <DisplaySettings />
         {/* Static identity, not a selector: the MVP has one experiment (DESIGN_SYSTEM §24). */}
         <div className="experiment-identity">
           <h1>

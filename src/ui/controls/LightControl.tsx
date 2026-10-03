@@ -69,7 +69,7 @@ export function LightControl({ value, disabled, onChange }: { value: number; dis
               disabled={disabled}
               onClick={() => onChange(reference)}
               className={`light-tick ${shift}`}
-              style={{ left: `${(lightToStopPosition(reference) / LAST_STOP) * 100}%` }}
+              style={{ left: `calc(var(--thumb) / 2 + (100% - var(--thumb)) * ${lightToStopPosition(reference) / LAST_STOP})` }}
             >
               {formatLight(reference)}
             </button>

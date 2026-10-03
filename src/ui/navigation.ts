@@ -1,5 +1,6 @@
 // In-page navigation shared by the header and the methodology bar (ExecPlan 0004 F1, ExecPlan 0005).
 // Views are App state, not routes (ADR-0003 §5): a destination is a view plus an element to focus inside it.
+import { prefersReducedMotion } from './preferences';
 
 export type View = 'experiment' | 'learn' | 'about';
 
@@ -29,7 +30,7 @@ const ARRIVAL_MS = 1600;
 export function arriveAt(id: string): void {
   const target = document.getElementById(id);
   if (!target) return;
-  const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+  const reduced = prefersReducedMotion();
   target.focus({ preventScroll: true });
   target.scrollIntoView?.({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
   target.dataset.arrived = 'true';

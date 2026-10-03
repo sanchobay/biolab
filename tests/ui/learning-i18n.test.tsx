@@ -85,15 +85,15 @@ describe('learning layer (PRD-0003 §1–§8)', () => {
     expect(feedback).toContain('800');
   });
 
+  // PRD-0006 (ExecPlan 0010) replaced the tutor preview with the working Lab Tutor; video lessons remain the only preview.
   it('W22 previews are clearly marked and never pretend to work', async () => {
     const user = setup();
     await user.click(screen.getByRole('link', { name: 'Learn' }));
 
-    const tutor = screen.getByRole('region', { name: /AI Lab Tutor/ });
-    expect(normalize(tutor.textContent)).toContain('Preview');
+    const tutor = screen.getByRole('region', { name: 'Lab Tutor' });
+    expect(normalize(tutor.textContent)).not.toContain('Preview');
+    expect(normalize(tutor.textContent)).toContain('not by an AI language model');
     expect(within(tutor).queryByRole('textbox')).toBeNull();
-    await user.click(within(tutor).getByRole('button', { name: 'Why did my biomass decrease?' }));
-    expect(normalize(within(tutor).getByRole('status').textContent)).toContain('Full conversational tutoring is coming soon.');
 
     const videos = screen.getByRole('region', { name: /Video lessons/ });
     expect(normalize(videos.textContent)).toContain('Coming soon');

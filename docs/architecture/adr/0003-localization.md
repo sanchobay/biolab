@@ -42,4 +42,4 @@ The explanation engine (`src/presentation/explanation.ts`) builds sentences from
 
 ## Status
 
-proposed. The architecture was specified in the user's request of 2026-09-27 and implemented on the user's instruction to proceed; it awaits formal acceptance.
+accepted

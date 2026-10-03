@@ -32,7 +32,12 @@ BioLab follows the way scientists work:
 
 A three-question **knowledge check** gives immediate feedback.
 
-The **AI Lab Tutor** and **video lessons** are shown as clearly labelled previews of planned features. They are not functional yet.
+The **Lab Tutor** answers a fixed set of questions about your own run ("Why did my biomass decrease?", "Why did heat stress happen?" and so on).
+- Its answers are built from the run's values, the model's parameters and the healthy baseline.
+- It is rule-based: no AI language model and no free-text input.
+- Answers are available in English, Kazakh and Russian, and can be read aloud.
+
+**Video lessons** are shown as a clearly labelled preview of a planned feature. They are not functional yet.
 
 ## Features
 

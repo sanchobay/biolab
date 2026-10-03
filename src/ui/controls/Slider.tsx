@@ -2,6 +2,12 @@ import { TriangleAlert } from 'lucide-react';
 import { useState, type CSSProperties, type PointerEvent, type ReactNode } from 'react';
 import { useI18n } from '../../i18n';
 
+/**
+ * Thumb diameter in px. It is also the CSS `--thumb` variable, so the thumb's travel is inset by half of it on each side:
+ * at the minimum and the maximum the thumb sits inside the track instead of overhanging its ends.
+ */
+const THUMB_PX = 18;
+
 export interface SliderProps {
   id: string;
   name: string;
@@ -54,13 +60,14 @@ export function Slider(props: SliderProps) {
 
   const setFromPointer = (event: PointerEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    if (rect.width <= 0) return;
+    const travel = rect.width - THUMB_PX;
+    if (travel <= 0) return;
     setMessage(null);
-    onChange(fromPosition(Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width))));
+    onChange(fromPosition(Math.min(1, Math.max(0, (event.clientX - rect.left - THUMB_PX / 2) / travel))));
   };
 
   const position = Math.min(1, Math.max(0, toPosition(value)));
-  const accents = { '--accent': accent, '--accent-icon': iconAccent ?? accent } as CSSProperties;
+  const accents = { '--accent': accent, '--accent-icon': iconAccent ?? accent, '--thumb': `${THUMB_PX}px` } as CSSProperties;
 
   return (
     <div className="control" style={accents}>
@@ -120,11 +127,12 @@ export function Slider(props: SliderProps) {
         onPointerMove={(event) => {
           if (!disabled && event.currentTarget.hasPointerCapture?.(event.pointerId)) setFromPointer(event);
         }}
+        style={{ '--p': position } as CSSProperties}
         className="slider"
       >
         <div className="slider-track" />
-        <div className="slider-fill" style={{ width: `${position * 100}%` }} />
-        <div className="slider-thumb" style={{ left: `${position * 100}%` }} />
+        <div className="slider-fill" />
+        <div className="slider-thumb" />
       </div>
       {children}
       {message && (

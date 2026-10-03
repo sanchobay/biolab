@@ -17,6 +17,109 @@ export const en = {
     comingSoon: 'Coming soon',
     close: 'Close',
   },
+  pwa: {
+    offlineReady: 'Available offline',
+    offline: 'Offline — running from this device',
+    updateAvailable: 'A new version of BioLab is available.',
+    reload: 'Reload',
+  },
+  display: {
+    button: 'Display settings',
+    close: 'Close display settings',
+    textSize: 'Text size',
+    lineSpacing: 'Line spacing',
+    spacing: { standard: 'Standard', wide: 'Wide', extra: 'Extra wide' },
+    motion: 'Motion',
+    motionOptions: { system: 'Follow device', reduce: 'Reduce motion' },
+    reset: 'Reset to defaults',
+    saved: 'Saved in this browser on this device.',
+  },
+  speech: {
+    readAloud: 'Read aloud',
+    pause: 'Pause',
+    resume: 'Resume',
+    stop: 'Stop',
+    noVoice: 'No English voice is installed on this device, so read aloud is unavailable in English.',
+    unsupported: 'Read aloud is not supported in this browser.',
+    // Words that replace symbols and units when text is read aloud (PRD-0005 §5).
+    words: {
+      lightUnit: 'micromoles of photons per square metre per second',
+      celsius: 'degrees Celsius',
+      times: 'times',
+      decreased: 'decreased',
+      increased: 'increased',
+      minus: 'minus',
+      per: 'per',
+    },
+  },
+  tutor: {
+    honesty: 'Answers are generated from your run and the model — not by an AI language model.',
+    ask: 'Ask the Lab Tutor',
+    questionsLabel: 'Questions for the Lab Tutor',
+    questions: {
+      f1: 'Why did my biomass decrease?',
+      f2: 'Why did pH increase?',
+      f3: 'What parameter should I investigate next?',
+      f4: 'Explain photoinhibition simply.',
+      c1: (failure: string) => `Why did ${failure.toLocaleLowerCase('en')} happen?`,
+      c2: (category: string) => `Why is culture health ${category.toLocaleLowerCase('en')}?`,
+      c3: 'Why is net O₂ negative in the dark?',
+      c3Light: 'Why is net O₂ negative even in the light?',
+    },
+    needRun: 'Run the experiment first — I answer from your run.',
+    provenance: (time: string, conditions: string) => `Based on your run at ${time}: ${conditions}.`,
+    f1: {
+      decreased: (from: string, to: string, time: string) => `Relative biomass went from ${from} to ${to} × initial by ${time}, so it decreased.`,
+      notDecreased: (from: string, to: string, time: string) => `Biomass did not decrease: it went from ${from} to ${to} × initial by ${time}.`,
+      baseline: (value: string) => `The healthy baseline reached ${value} × initial.`,
+      mainCause: (failure: string, time: string) => `Main cause in this model: ${failure}, which occurred during this run — first at ${time}.`,
+      also: (failures: string) => `Also occurred during this run: ${failures}.`,
+      suboptimal: 'No stress failure occurred; in this model growth was slowed by conditions outside the favorable range.',
+      normal: 'In this model the culture grows during light periods and declines slightly in darkness, when respiration continues without photosynthesis.',
+    },
+    f2: {
+      increased: (from: string, to: string, time: string) => `Simulated pH went from ${from} to ${to} by ${time}, so it increased.`,
+      notIncreased: (from: string, to: string, time: string) => `pH did not increase: it went from ${from} to ${to} by ${time}.`,
+      mechanism: 'In this model, photosynthetic growth takes up carbon from the bicarbonate medium and raises pH; in darkness, respiration makes pH drift down.',
+      notRaised: 'In this run, photosynthesis did not outweigh that downward drift.',
+      boundaries: (low: string, high: string, lowStress: string, highStress: string) =>
+        `In this model pH is favorable above ${low} and below ${high}; at or below ${lowStress} or at or above ${highStress} it causes stress.`,
+    },
+    f3: {
+      beforeRun: (conditions: string) => `Start from the healthy baseline (${conditions}), then change one condition at a time and compare.`,
+      primary: (failure: string) => `${failure} is the main cause in this run, so start there:`,
+      suboptimal: 'No stress failure occurred; the first condition to look at in this model:',
+      healthy: 'This run was healthy. Change one condition at a time, so you can see what each one does.',
+      examples: (light: string, temperature: string) =>
+        `For example, set light to ${light} µmol photons m⁻² s⁻¹ to see photoinhibition, or temperature to ${temperature} to see heat stress.`,
+    },
+    f4: {
+      saturation: (onset: number) =>
+        `More light speeds up photosynthesis only up to about ${onset} µmol photons m⁻² s⁻¹; above that the culture is saturated, and saturation is not damage.`,
+      zone: (onset: number) =>
+        `From ${onset} µmol photons m⁻² s⁻¹ this model enters the photoinhibition zone: too much light lowers the culture's photosynthetic capacity for the rest of the run.`,
+      temperature: (low: number, high: number) =>
+        `The effect is stronger when temperature is away from the favorable range (above ${low} °C and below ${high} °C).`,
+      outside: (light: string, onset: number) => `${light} µmol photons m⁻² s⁻¹ is below this model's photoinhibition zone (${onset}).`,
+    },
+    c1: {
+      onset: (failure: string, time: string) => `${failure} occurred during this run — first at ${time}.`,
+    },
+    c2: {
+      state: (time: string, category: string, trend: string) => `Culture health at ${time}: ${category}, ${trend}.`,
+      retained: (cause: string) => `Retained cause: ${cause}.`,
+      delayed: (worsen: number, recover: number) =>
+        `Health is a delayed indicator: in this model it worsens about ${worsen} h after conditions turn unfavorable and recovers more slowly, over about ${recover} h.`,
+    },
+    c3: {
+      lowest: (value: string, unit: string, time: string, light: boolean) =>
+        `The lowest net O₂ production in this run was ${value} ${unit} at ${time}, during a ${light ? 'light' : 'dark'} period.`,
+      respiration: 'Respiration consumes O₂ in light and in darkness, while photosynthesis produces O₂ only in light.',
+      darkNormal: 'Negative net O₂ in darkness is normal: there is no photosynthesis then.',
+      light: (time: string) =>
+        `In the light, net O₂ is negative when respiration consumes more O₂ than photosynthesis produces; in this run that first happened at ${time}.`,
+    },
+  },
   header: {
     tagline: 'Virtual experiments in biology',
     mainNav: 'Main',
@@ -497,16 +600,7 @@ export const en = {
       { title: 'Photosynthesis & oxygen', duration: '3–4 min' },
       { title: 'Understanding your results', duration: '3–4 min' },
     ],
-    tutorTitle: 'AI Lab Tutor',
-    tutorLead: 'A future tutor will answer questions about your own run. These are examples of what students will be able to ask:',
-    tutorExamples: [
-      'Why did my biomass decrease?',
-      'Why did pH increase?',
-      'What parameter should I investigate next?',
-      'Explain photoinhibition simply.',
-    ],
-    tutorNoticeTitle: 'AI Lab Tutor — Preview',
-    tutorNotice: 'Full conversational tutoring is coming soon.',
+    tutorTitle: 'Lab Tutor',
   },
   about: {
     title: 'About BioLab',
@@ -521,9 +615,10 @@ export const en = {
       'Scientific explanations',
       'Theory, protocol and knowledge check',
       'English, Kazakh and Russian interface',
+      'Lab Tutor (answers from your run and the model)',
     ],
     previewTitle: 'Previews of planned features',
-    previewItems: ['AI Lab Tutor', 'Video lessons'],
+    previewItems: ['Video lessons'],
     modelTitle: 'About the model',
     languagesTitle: 'Languages',
     languages: 'Choose English, Қазақша or Русский in the header. The experiment keeps running when you switch.',

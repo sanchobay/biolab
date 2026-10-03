@@ -1,27 +1,55 @@
-import { ArrowRight, Bot, ChevronRight, Clapperboard, Clock3, Droplet, FlaskConical, Heart, Leaf, Bubbles, MessageCircleQuestion, Sun, Thermometer, Wind } from 'lucide-react';
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import { ArrowRight, ChevronRight, Clapperboard, Clock3, Droplet, FlaskConical, Heart, Leaf, Bubbles, Sun, Thermometer, Wind } from 'lucide-react';
+import { useRef, type CSSProperties, type ReactNode } from 'react';
 import { useI18n } from '../../i18n';
 import { formatLight, formatStartingPH, formatTemperature } from '../../presentation/format';
-import { BASELINE_INPUT } from '../../simulation';
+import type { TutorRun } from '../../presentation/tutor';
+import { BASELINE_INPUT, type SimulationResult } from '../../simulation';
 import { STAGES } from '../navigation';
+import { regionSpeech } from '../speech/readableText';
+import { ReadAloud } from '../speech/ReadAloud';
 import { Species } from '../Species';
 import { KnowledgeCheck } from './KnowledgeCheck';
+import { LabTutor } from './LabTutor';
 import { ResponseDiagrams } from './ResponseDiagrams';
 
 interface LearnViewProps {
   onOpenExperiment: () => void;
   onJump: (target: string) => void;
+  /** The run so far for the Lab Tutor (PRD-0006); null before a run. */
+  tutorRun: TutorRun | null;
+  tutorBaseline: SimulationResult | null;
 }
 
 const ICON = { 'aria-hidden': true, size: 16, strokeWidth: 2 } as const;
 
-function Section({ id, title, tag, children }: { id: string; title: ReactNode; tag?: string; children: ReactNode }) {
+interface SectionProps {
+  id: string;
+  title: ReactNode;
+  tag?: string;
+  /** Offers Read aloud for the section's heading and text (PRD-0005 §5). */
+  readAloud?: boolean;
+  children: ReactNode;
+}
+
+function Section({ id, title, tag, readAloud = false, children }: SectionProps) {
+  const { m } = useI18n();
+  const section = useRef<HTMLElement>(null);
+  const heading = (
+    <h3 id={`${id}-heading`}>
+      {title}
+      {tag && <span className="scope-tag">{tag}</span>}
+    </h3>
+  );
   return (
-    <section id={id} tabIndex={-1} aria-labelledby={`${id}-heading`} className="reading-section">
-      <h3 id={`${id}-heading`}>
-        {title}
-        {tag && <span className="scope-tag">{tag}</span>}
-      </h3>
+    <section ref={section} id={id} tabIndex={-1} aria-labelledby={`${id}-heading`} className="reading-section">
+      {readAloud ? (
+        <div className="reading-section-head">
+          {heading}
+          <ReadAloud id={id} getText={() => regionSpeech(section.current, m)} />
+        </div>
+      ) : (
+        heading
+      )}
       {children}
     </section>
   );
@@ -37,44 +65,11 @@ function OpenExperiment({ onClick }: { onClick: () => void }) {
   );
 }
 
-/** Tutor preview: example questions only. Activating one says plainly that tutoring is not available yet (PRD-0003 §8). */
-function TutorPreview() {
-  const { m } = useI18n();
-  const l = m.learn;
-  const [asked, setAsked] = useState(false);
-  return (
-    <>
-      <p className="reading-lead">{l.tutorLead}</p>
-      <ul className="tutor-examples">
-        {l.tutorExamples.map((question) => (
-          <li key={question}>
-            <button type="button" onClick={() => setAsked(true)} className="tutor-example">
-              <MessageCircleQuestion {...ICON} />
-              {question}
-            </button>
-          </li>
-        ))}
-      </ul>
-      <div role="status" className="preview-notice" data-visible={asked || undefined}>
-        {asked && (
-          <>
-            <strong>
-              <Bot {...ICON} />
-              {l.tutorNoticeTitle}
-            </strong>
-            <span>{l.tutorNotice}</span>
-          </>
-        )}
-      </div>
-    </>
-  );
-}
-
 /**
- * Learn: methodology, theory, protocol, knowledge check and the two roadmap previews, as one reading page with an
- * in-page contents list. It sits beside the workspace; the experiment keeps running while it is open.
+ * Learn: methodology, theory, protocol, knowledge check, the video lessons preview and the Lab Tutor, as one reading
+ * page with an in-page contents list. It sits beside the workspace; the experiment keeps running while it is open.
  */
-export function LearnView({ onOpenExperiment, onJump }: LearnViewProps) {
+export function LearnView({ onOpenExperiment, onJump, tutorRun, tutorBaseline }: LearnViewProps) {
   const { m } = useI18n();
   const l = m.learn;
   const c = m.controls;
@@ -141,7 +136,7 @@ export function LearnView({ onOpenExperiment, onJump }: LearnViewProps) {
             <p className="reading-lead">{l.lead}</p>
           </header>
 
-          <Section id="learn-methodology" title={l.methodologyTitle}>
+          <Section id="learn-methodology" readAloud title={l.methodologyTitle}>
             <p className="reading-lead">{l.methodologyLead}</p>
             <ol className="method-steps">
               {STAGES.map(({ stage }, index) => (
@@ -171,7 +166,7 @@ export function LearnView({ onOpenExperiment, onJump }: LearnViewProps) {
             </ol>
           </Section>
 
-          <Section id="learn-theory" title={l.theoryTitle}>
+          <Section id="learn-theory" readAloud title={l.theoryTitle}>
             <p className="reading-lead">{l.theoryLead}</p>
             <div className="theory-list">
               {l.theory.map((topic) => (
@@ -199,7 +194,7 @@ export function LearnView({ onOpenExperiment, onJump }: LearnViewProps) {
             <p className="reading-note">{l.diagramsCaption}</p>
           </Section>
 
-          <Section id="learn-protocol" title={l.protocolTitle}>
+          <Section id="learn-protocol" readAloud title={l.protocolTitle}>
             <dl className="protocol-facts">
               <div>
                 <dt>{l.objectiveTitle}</dt>
@@ -276,8 +271,8 @@ export function LearnView({ onOpenExperiment, onJump }: LearnViewProps) {
             </ul>
           </Section>
 
-          <Section id="learn-tutor" title={l.tutorTitle} tag={m.common.preview}>
-            <TutorPreview />
+          <Section id="learn-tutor" title={l.tutorTitle}>
+            <LabTutor run={tutorRun} baseline={tutorBaseline} />
           </Section>
         </div>
       </div>

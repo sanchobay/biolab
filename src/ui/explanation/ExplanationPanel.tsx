@@ -1,9 +1,12 @@
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, MessageCircleQuestion } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useI18n } from '../../i18n';
 import type { ExplanationSection, ExplanationView } from '../../presentation/explanation';
 import { TONE_TEXT } from '../../presentation/labels';
+import { explanationSpeech } from '../../presentation/speech';
 import { ModelAssumptions } from '../chamber/ModelAssumptions';
+import { prefersReducedMotion } from '../preferences';
+import { ReadAloud } from '../speech/ReadAloud';
 import { StateIcon } from '../StateIcon';
 import { OrganismCard } from './OrganismCard';
 
@@ -62,7 +65,7 @@ function useScrollState() {
  * "What's happening in the culture?": what happened, why, effect on the model and parameter to reconsider (PRD-0002 §7),
  * flowing in balanced columns beside the organism note.
  */
-export function ExplanationPanel({ view }: { view: ExplanationView }) {
+export function ExplanationPanel({ view, onAskTutor }: { view: ExplanationView; onAskTutor?: () => void }) {
   const { m } = useI18n();
   const { ref, state, measure } = useScrollState();
   const titleColor = view.tone === 'neutral' ? 'text-ink' : TONE_TEXT[view.tone];
@@ -72,7 +75,7 @@ export function ExplanationPanel({ view }: { view: ExplanationView }) {
   const scrollOn = () => {
     const element = ref.current;
     if (!element) return;
-    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    const reduced = prefersReducedMotion();
     element.scrollBy({ top: element.clientHeight * 0.8, behavior: reduced ? 'auto' : 'smooth' });
   };
 
@@ -82,7 +85,16 @@ export function ExplanationPanel({ view }: { view: ExplanationView }) {
         <h2 id="guide-title" className="panel-title">
           {m.explanation.panelTitle}
         </h2>
-        <ModelAssumptions />
+        <div className="head-actions">
+          <ReadAloud id="explanation" getText={() => explanationSpeech(view, m)} />
+          {onAskTutor && (
+            <button type="button" onClick={onAskTutor} className="ghost-button">
+              <MessageCircleQuestion aria-hidden="true" size={16} strokeWidth={2} />
+              {m.tutor.ask}
+            </button>
+          )}
+          <ModelAssumptions />
+        </div>
       </header>
       <div className="guide-frame" data-more={hiddenBelow || undefined}>
         <div

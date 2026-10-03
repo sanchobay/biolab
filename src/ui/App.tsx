@@ -21,6 +21,8 @@ import { Header } from './Header';
 import { LearnView } from './learn/LearnView';
 import { MethodologyBar } from './MethodologyBar';
 import { arriveAt, type Destination, type Stage, type View } from './navigation';
+import { PreferencesProvider } from './PreferencesProvider';
+import { UpdateNotice } from './pwa/UpdateNotice';
 import { applyTheme, type Theme } from './theme';
 import { usePlayback } from './usePlayback';
 import { initialWorkspace, workspaceReducer } from './workspaceReducer';
@@ -88,6 +90,8 @@ function Laboratory() {
         ? outcomeExplanation(live, baseline, m)
         : currentExplanation(live, step, m);
   const record = runRecordView(live, phase === 'completed', step, m);
+  // The Lab Tutor answers from the same run state, so switching views never loses the run (PRD-0006 §2).
+  const tutorRun = live ? { result: live, step, completed: phase === 'completed' } : null;
   const spoken = announcement(phase, runError, live, step, resetNotice, m);
   const stage: Stage | null = view === 'learn' ? learnStage : view === 'experiment' ? (phase === 'completed' ? 'results' : 'experiment') : null;
   const openExperiment = () => navigate({ view: 'experiment', target: 'experiment-controls' });
@@ -106,6 +110,7 @@ function Laboratory() {
       </a>
       <Header theme={theme} onThemeChange={handleTheme} view={view} onNavigate={navigate} />
       <MethodologyBar current={stage} onNavigate={navigate} />
+      <UpdateNotice />
       {!noticeDismissed && (
         <div className="narrow-notice lg:hidden">
           <span>{m.common.narrowNotice}</span>
@@ -119,11 +124,18 @@ function Laboratory() {
           <ControlsPanel config={config} phase={phase} onChange={handleConfigure} onRun={handleRun} onReset={handleReset} />
           <CultureChamber phase={phase} runError={runError} config={config} sample={live ? live.samples[step] : null} />
           <LiveDataPanel phase={phase} config={config} result={result} step={step} theme={theme} />
-          <ExplanationPanel view={explanation} />
+          <ExplanationPanel view={explanation} onAskTutor={() => navigate({ view: 'learn', target: 'learn-tutor' })} />
           <RunRecord {...record} />
         </main>
       )}
-      {view === 'learn' && <LearnView onOpenExperiment={openExperiment} onJump={(target) => navigate({ view: 'learn', target })} />}
+      {view === 'learn' && (
+        <LearnView
+          onOpenExperiment={openExperiment}
+          onJump={(target) => navigate({ view: 'learn', target })}
+          tutorRun={tutorRun}
+          tutorBaseline={baseline}
+        />
+      )}
       {view === 'about' && <AboutView onOpenExperiment={openExperiment} />}
       <Announcer polite={spoken.polite} assertive={spoken.assertive} />
     </div>
@@ -132,8 +144,10 @@ function Laboratory() {
 
 export function App() {
   return (
-    <I18nProvider>
-      <Laboratory />
-    </I18nProvider>
+    <PreferencesProvider>
+      <I18nProvider>
+        <Laboratory />
+      </I18nProvider>
+    </PreferencesProvider>
   );
 }

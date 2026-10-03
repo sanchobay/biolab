@@ -63,7 +63,7 @@ export function errorExplanation(m: Messages): ExplanationView {
   };
 }
 
-function failureWhatHappened(m: Messages, type: FailureType, input: SimulationInput, pH: number, penalty: number): string {
+export function failureWhatHappened(m: Messages, type: FailureType, input: SimulationInput, pH: number, penalty: number): string {
   const what = m.explanation.what;
   switch (type) {
     case 'thermal':
@@ -79,7 +79,7 @@ function failureWhatHappened(m: Messages, type: FailureType, input: SimulationIn
   }
 }
 
-function failureWhy(m: Messages, type: FailureType, pH: number): string[] {
+export function failureWhy(m: Messages, type: FailureType, pH: number): string[] {
   const why = m.explanation.why;
   switch (type) {
     case 'thermal':
@@ -94,7 +94,7 @@ function failureWhy(m: Messages, type: FailureType, pH: number): string[] {
   }
 }
 
-function failureTryNext(m: Messages, type: FailureType): string {
+export function failureTryNext(m: Messages, type: FailureType): string {
   const next = m.explanation.tryNext;
   switch (type) {
     case 'thermal':
@@ -108,7 +108,7 @@ function failureTryNext(m: Messages, type: FailureType): string {
   }
 }
 
-function causeWhatHappened(m: Messages, cause: SuboptimalCause, input: SimulationInput, pH: number): string {
+export function causeWhatHappened(m: Messages, cause: SuboptimalCause, input: SimulationInput, pH: number): string {
   const what = m.explanation.cause;
   switch (cause) {
     case 'temperature-cold':
@@ -145,7 +145,7 @@ function causeWhy(m: Messages, cause: SuboptimalCause): string {
   }
 }
 
-function causeTryNext(m: Messages, cause: SuboptimalCause): string {
+export function causeTryNext(m: Messages, cause: SuboptimalCause): string {
   const next = m.explanation.tryNext;
   switch (cause) {
     case 'temperature-cold':
@@ -189,7 +189,7 @@ function failureView(
   };
 }
 
-interface ObservedCause {
+export interface ObservedCause {
   cause: SuboptimalCause;
   pH: number;
 }
@@ -281,7 +281,7 @@ export function currentExplanation(result: SimulationResult, step: number, m: Me
   return view;
 }
 
-function sameInput(a: SimulationInput, b: SimulationInput): boolean {
+export function sameInput(a: SimulationInput, b: SimulationInput): boolean {
   return (
     a.temperatureC === b.temperatureC &&
     a.startingPH === b.startingPH &&
@@ -313,7 +313,7 @@ function outcomeEffect(m: Messages, result: SimulationResult, baseline: Simulati
   return lines;
 }
 
-function observedCauses(samples: readonly TrajectorySample[]): ObservedCause[] {
+export function observedCauses(samples: readonly TrajectorySample[]): ObservedCause[] {
   const order: SuboptimalCause[] = ['temperature-cold', 'temperature-warm', 'light-limited', 'ph-low', 'ph-high', 'aeration-low', 'aeration-off'];
   const firstSeen = new Map<SuboptimalCause, number>();
   for (const sample of samples) {

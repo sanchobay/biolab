@@ -3,7 +3,9 @@ import type { CSSProperties, ReactNode } from 'react';
 import { formatBiomass, formatClock, formatNetO2, formatPH, formatStartingPH } from '../../presentation/format';
 import { useI18n } from '../../i18n';
 import { TONE_PILL, healthIcon, healthTone, retainedCauseLabel, type Tone } from '../../presentation/labels';
+import { resultsSpeech } from '../../presentation/speech';
 import { PARAMETERS, type SimulationInput, type SimulationResult, type TrajectorySample } from '../../simulation';
+import { ReadAloud } from '../speech/ReadAloud';
 import { StateIcon } from '../StateIcon';
 import type { Theme } from '../theme';
 import type { Phase } from '../workspaceReducer';
@@ -109,6 +111,7 @@ export function LiveDataPanel({ phase, config, result, step, theme }: LiveDataPa
               {r.title}
             </h2>
             {!sample && <p className="panel-caption">{r.empty}</p>}
+            <ReadAloud id="key-results" getText={() => resultsSpeech(sample, live ? live.input.startingPH : config.startingPH, m)} />
           </div>
           <p data-testid="sim-clock" className="sim-clock">
             <span className="sim-clock-label">{r.simulatedTime} </span>

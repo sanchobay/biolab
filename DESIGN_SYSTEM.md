@@ -697,8 +697,9 @@ For the MVP:
 - buttons must have understandable text or accessible labels
 - charts should show labels and values
 
-Future accessibility features such as voice interaction,
-text-to-speech, and advanced visual controls are outside MVP scope.
+Read aloud (local device voices only) and display settings (text size,
+line spacing, reduced motion) are in scope since BRD-0002 and PRD-0005; see §31.
+Voice interaction (speech recognition, voice commands) remains out of scope.
 
 ---
 
@@ -770,6 +771,8 @@ Do NOT add UI for:
 unless explicitly requested.
 
 These are roadmap concepts and must not clutter the current experiment interface.
+
+The **Lab Tutor** (PRD-0006) is not an "AI Tutor": it answers a fixed set of questions with rules over the student's run and the model, and says so on screen. **Read aloud** (PRD-0005) is not a voice assistant. Both were explicitly requested (BRD-0002); the prohibitions above still apply to AI tutors and voice assistants.
 
 ---
 
@@ -942,8 +945,8 @@ Numbers use tabular figures.
 This section extends §28–§29 without changing the workspace design. It awaits human review.
 
 **Scope (§24)**
-- The user explicitly requested the AI Lab Tutor and Video lessons, as previews only.
-- Every roadmap feature is visibly tagged "Preview" or "Coming soon", and uses dashed outlines where it looks interactive.
+- Video lessons are a preview only. The former "AI Lab Tutor" preview became the functional Lab Tutor (PRD-0006, §31).
+- Every remaining roadmap feature is visibly tagged "Preview" or "Coming soon", and uses dashed outlines where it looks interactive.
 - A preview never simulates an answer or playback.
 
 **Methodology bar**
@@ -973,3 +976,57 @@ This section extends §28–§29 without changing the workspace design. It await
 - Labels wrap rather than truncate, and buttons grow with their text.
 - The fit-to-viewport workspace (§28) applies to English from 820 px of height, and to Russian and Kazakh from 1000 px. Below that the page scrolls, so longer labels are never clipped.
 - Numbers, units and *Arthrospira platensis* are identical in every language.
+
+## 31. Offline, display settings, read aloud and Lab Tutor (BRD-0002, PRD-0004–0006, 2026-09-30)
+
+This section extends §28–§30. It adds components that use only the existing tokens. No new colours, fonts, icon libraries or radii.
+
+**Offline status (PRD-0004)**
+- A compact header status next to the language switcher.
+  - Lucide `CloudCheck` ("Available offline") or `CloudOff` ("Offline — running from this device")
+  - the icon at 16 px, with 12 px Inter in Secondary Text
+  - no pill, border or background: it is status, not a control
+- Hidden until the app is actually cached.
+- **Update notice:** the narrow-notice pattern.
+  - a full-width slim bar under the methodology bar: Elevated Surface, Default Border below, 13 px Secondary Text
+  - a secondary 28 px "Reload" button and a "Dismiss" text button
+  - it never reloads by itself
+
+**Display settings (PRD-0005)**
+- **Trigger:** a header button with Lucide `ALargeSmall` at 16 px, in the header-tools group, with an accessible name.
+- **Panel:** the Model-assumptions popover pattern: Primary Surface, Strong Border, 12 px radius, the panel shadow token.
+- **Controls:** the existing segmented radio groups (§29), with 13 px labels and a "Reset to defaults" text button.
+- **Type tokens are rem:**
+  - 1 rem = 16 px, at the same sizes as the §29 type roles, so 100% renders identically
+  - the root size follows the text-size setting (100 / 125 / 150 / 200%)
+  - spacing, radii and icons stay in px
+- **Line spacing:**
+  - Standard keeps today's values
+  - Wide: prose line height 1.8
+  - Extra wide: prose line height 2.0, and paragraph spacing twice the font size
+- **Reduce motion:** the same rules as the operating-system setting (§16, PRD-0002 §11), applied through the attribute. It never forces motion on.
+- **Layout:** above 100% text the fit-to-viewport workspace (§28, §30) switches to natural page scroll. Regions stack into fewer columns so that text wraps and never clips.
+  - **Column count:** the workspace uses the column count it would have at (viewport width ÷ text scale): two columns from 1024 px × scale, three from 1280 px × scale. For example, 125% at 1440 px gives two columns, and 150% or 200% at 1440 px gives one.
+  - **Controls with a fixed height** keep that height as a minimum and grow when their label wraps.
+  - **Long words** break rather than spill.
+- **Header:** with the Display settings control added, the tagline hides below 1536 px for RU and KK (EN still at 1440 px), so the header stays on one row at 100%.
+- **Line spacing scope:** Wide and Extra wide change prose only (explanation, Learn, About). Pills and badges keep a compact line box.
+
+**Read aloud (PRD-0005)**
+- **Controls:** in each readable region's heading row, ghost buttons 28 px high, with a 16 px Lucide icon and 13 px text.
+  - `Volume2` "Read aloud", then `Pause` "Pause" or `Play` "Resume", plus `Square` "Stop"
+- **Unavailable:** the control is disabled, and the reason shows in 12 px Secondary Text (no local voice for the language, or not supported).
+- **No indication by colour alone.** No animated equalizer.
+
+**Lab Tutor (PRD-0006)**
+- **Heading:** "Lab Tutor" with no Preview tag. Below it, the honesty line: Lucide `Info` and 13 px Secondary Text.
+- **Question chips:**
+  - wrapping buttons, 32 px minimum height, 8 px radius, Default Border, 14 px text
+  - selected: the §29 segment-selected style (Primary border, Primary soft background, Primary-ink text), with `aria-pressed`
+  - contextual chips look identical to fixed chips
+- **Answer:**
+  - one at a time, below the chips, behind a hairline rule
+  - a 15 px semibold heading (the question), and prose with the reading-view roles (15 px / 1.6)
+  - the provenance line in 12 px Secondary Text
+  - no chat bubbles, avatars or typing indicators
+- **"Ask the Lab Tutor":** a ghost text button in the explanation panel heading row.

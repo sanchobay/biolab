@@ -48,7 +48,7 @@ export function AboutView({ onOpenExperiment }: { onOpenExperiment: () => void }
             <ul className="status-list">
               {a.previewItems.map((item) => (
                 <li key={item}>
-                  <span className="scope-tag">{item === a.previewItems[0] ? m.common.preview : m.common.comingSoon}</span>
+                  <span className="scope-tag">{m.common.comingSoon}</span>
                   {item}
                 </li>
               ))}

@@ -4,6 +4,7 @@ import { Line } from 'react-chartjs-2';
 import type { ChartPoint } from '../../presentation/chartData';
 import { useI18n } from '../../i18n';
 import { formatClock } from '../../presentation/format';
+import { scaledFontSize, usePreferences } from '../preferences';
 import type { Theme } from '../theme';
 import { overlayPlugin, readChartColors, type OverlayOptions, type SeriesColor } from './chartOverlays';
 import { ValuesTable } from './ValuesTable';
@@ -54,6 +55,7 @@ interface MetricChartProps {
 /** One trend chart with fixed axes (PRD-0002 §6, D-11) and an hourly values table (D-17). */
 export function MetricChart({ title, action, unit, unitCaption, points, yMin, yMax, yStep, tickDecimals, format, overlays, completed, hourly, showValues, color, theme }: MetricChartProps) {
   const { m } = useI18n();
+  const { textSize } = usePreferences().preferences;
   const colors = useMemo(() => readChartColors(theme), [theme]);
   const valuesVisible = showValues && completed && hourly !== null;
   const lineColor = colors.series[color];
@@ -78,7 +80,8 @@ export function MetricChart({ title, action, unit, unitCaption, points, yMin, yM
     ],
   };
 
-  const tickFont = { family: colors.mono, size: 11 };
+  // Canvas text does not follow the root font size; tick labels and the axis title scale with Text size (PRD-0005 §2).
+  const tickFont = { family: colors.mono, size: scaledFontSize(11, textSize) };
   const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -94,7 +97,7 @@ export function MetricChart({ title, action, unit, unitCaption, points, yMin, yM
         ticks: { stepSize: 4, color: colors.ink2, font: tickFont },
         grid: { color: colors.line },
         border: { color: colors.lineStrong },
-        title: { display: true, text: m.trends.timeAxis, color: colors.ink2, font: { family: colors.sans, size: 12 } },
+        title: { display: true, text: m.trends.timeAxis, color: colors.ink2, font: { family: colors.sans, size: scaledFontSize(12, textSize) } },
       },
       y: {
         min: yMin,
